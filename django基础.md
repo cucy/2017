@@ -247,4 +247,136 @@ In [5]: p2.save()
 [<Publisher: Publisher object>, <Publisher: Publisher object>]
 
 # 查询
+
+
+```
+## 字符串表示
+```python
+# coding:utf8
+from django.db import models
+
+
+class Publisher(models.Model):
+    name = models.CharField(max_length=30, verbose_name=u'发版商')
+    address = models.CharField(max_length=50, verbose_name=u'地址')
+    city = models.CharField(max_length=60, verbose_name=u'城市')
+    state_province = models.CharField(max_length=30, verbose_name=u'街道')
+    country = models.CharField(max_length=50, verbose_name=u'国家')
+    website = models.URLField(verbose_name=u'网址')
+
+    def __str__(self):
+        return self.name
+
+
+class Author(models.Model):
+    first_name = models.CharField(max_length=30, verbose_name=u'姓')
+    last_name = models.CharField(max_length=40, verbose_name=u'名')
+    email = models.EmailField(verbose_name=u'邮箱地址')
+
+    def __str__(self):
+        return u'%s %s' % (self.first_name, self.last_name)
+
+
+class Book(models.Model):
+    title = models.CharField(max_length=100, verbose_name=u'书名')
+    authors = models.ManyToManyField(Author, verbose_name=u'作者')  # 多对多
+    publisher = models.ForeignKey(Publisher, verbose_name=u'发版商')  # 一对多
+    publication_date = models.DateField(verbose_name=u'发布日期')
+
+    def __str__(self):
+        return self.title
+
+# 再次查询不会只返回 class对象object
+In [1]: from books.models import Publisher
+
+In [2]: publisher_list = Publisher.objects.all()
+
+In [3]: publisher_list
+Out[3]: [<Publisher: 清华出版社>, <Publisher: 图灵出版社>]
+```
+- 更新、插入数据
+```python
+>>> p = Publisher(name='Apress',
+ address='2855 Telegraph Ave.',
+ city='Berkeley',
+ state_province='CA',
+ country='U.S.A.',
+ website='http://www.apress.com/')
+>>> p.save()
+
+# 更新
+>>> p.name = 'Apress Publishing'
+>>> p.save()
+```
+## 更改默认排序
+models.py
+```python
+class Publisher(models.Model):
+    name = models.CharField(max_length=30, verbose_name=u'发版商')
+    address = models.CharField(max_length=50, verbose_name=u'地址')
+    city = models.CharField(max_length=60, verbose_name=u'城市')
+    state_province = models.CharField(max_length=30, verbose_name=u'街道')
+    country = models.CharField(max_length=50, verbose_name=u'国家')
+    website = models.URLField(verbose_name=u'网址')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ['name']
+```
+- 切片数据
+```python
+>>> Publisher.objects.order_by('name')[0]
+<Publisher: Apress>
+
+>>> Publisher.objects.order_by('name')[0:2]
+# 没有负数
+
+```
+
+- 更新记录 高效
+```python
+>>> p = Publisher.objects.get(name='Apress')
+>>> p.name = 'Apress Publishing'
+>>> p.save()
+# 真正执行的sql如下
+```
+```mysql
+SELECT id, name, address, city, state_province, country, website
+FROM books_publisher
+WHERE name = 'Apress';
+UPDATE books_publisher SET
+name = 'Apress Publishing',
+address = '2855 Telegraph Ave.',
+city = 'Berkeley',
+state_province = 'CA',
+country = 'U.S.A.',
+website = 'http://www.apress.com'
+WHERE id = 52;
+```
+- 更新另一种方法
+```mysql
+>>> Publisher.objects.filter(id=52).update(name='Apress Publishing')
+
+UPDATE books_publisher
+SET name = 'Apress Publishing'
+WHERE id = 52;
+
+>>> Publisher.objects.all().update(country='USA')
+2
+```
+## 删除记录
+```python
+>>> p = Publisher.objects.get(name="O'Reilly")
+>>> p.delete()
+>>> Publisher.objects.all()
+[<Publisher: Apress Publishing>]
+
+>>> Publisher.objects.filter(country='USA').delete()
+>>> Publisher.objects.all().delete()
+>>> Publisher.objects.all()
+[]
+
+>>> Publisher.objects.filter(country='USA').delete()
 ```
