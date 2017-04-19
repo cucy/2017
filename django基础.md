@@ -138,3 +138,113 @@ base.html
 </body>
 </html>
 ```
+
+# 模型
+- 定义使用的数据库
+settings.py
+```python
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
+```
+
+- 模型基本状况
+```
+作者
+	姓名
+	邮箱地址
+出版社
+	出版社名
+	街道地址
+	城市
+	国家
+	网址
+书
+	书名
+	发布日期
+	作者（多对多）
+	发版商（一对多)
+```
+models.py
+```python
+# coding:utf8
+from django.db import models
+
+
+class Publisher(models.Model):
+    name = models.CharField(max_length=30, verbose_name=u'发版商')
+    address = models.CharField(max_length=50, verbose_name=u'地址')
+    city = models.CharField(max_length=60, verbose_name=u'城市')
+    state_province = models.CharField(max_length=30, verbose_name=u'街道')
+    country = models.CharField(max_length=50, verbose_name=u'国家')
+    website = models.URLField(verbose_name=u'网址')
+
+
+class Author(models.Model):
+    first_name = models.CharField(max_length=30, verbose_name=u'姓')
+    last_name = models.CharField(max_length=40, verbose_name=u'名')
+    email = models.EmailField(verbose_name=u'邮箱地址')
+
+
+class Book(models.Model):
+    title = models.CharField(max_length=100, verbose_name=u'书名')
+    authors = models.ManyToManyField(Author, verbose_name=u'作者') #多对多
+    publisher = models.ForeignKey(Publisher, verbose_name=u'发版商') #  一对多
+    publication_date = models.DateField(verbose_name=u'发布日期')
+```
+- 生成数据库迁移文件
+```python
+python manage.py makemigrations books
+```
+- 查看生成的sql
+```sql
+$ python manage.py sqlmigrate books 0001
+BEGIN;
+CREATE TABLE "books_author" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "first_name" varchar(30) NOT NULL, "last_name" varchar(40) NOT NULL, "email" varchar(254) NOT NULL);
+CREATE TABLE "books_book" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "title" varchar(100) NOT NULL, "publication_date" date NOT NULL);
+CREATE TABLE "books_book_authors" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "book_id" integer NOT NULL REFERENCES "books_book" ("id"), "author_id" integer NOT NULL REFERENCES "books_author" ("id"), UNIQUE ("book_id", "author_id"));
+CREATE TABLE "books_publisher" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "name" varchar(30) NOT NULL, "address" varchar(50) NOT NULL, "city" varchar(60) NOT NULL, "state_province" varchar(30) NOT NULL, "country" varchar(50) NOT NULL, "website" varchar(200) NOT NULL);
+CREATE TABLE "books_book__new" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "title" varchar(100) NOT NULL, "publication_date" date NOT NULL, "publisher_id" integer NOT NULL REFERENCES "books_publisher" ("id"));
+INSERT INTO "books_book__new" ("publication_date", "publisher_id", "id", "title") SELECT "publication_date", NULL, "id", "title" FROM "books_book";
+DROP TABLE "books_book";
+ALTER TABLE "books_book__new" RENAME TO "books_book";
+CREATE INDEX "books_book_2604cbea" ON "books_book" ("publisher_id");
+
+COMMIT;
+```
+- 同步数据库
+```python
+python manage.py migrate
+```
+## 基础查询
+```python
+In [1]: from books.models import Publisher
+
+In [2]: p1 = Publisher(name='清华出版社', address='2855 Telegraph Avenue',
+   ...: city='北京', state_province='CA', country='CN',
+   ...: website='http://www.qinghua.com/')
+
+In [3]: p1.save()
+In [4]: p2 = Publisher(name="图灵出版社", address='10 Fawcett St.',
+   ...: city='Cambridge', state_province='MA', country='U.S.A.',
+   ...: website='http://www.oreilly.com/')
+
+In [5]: p2.save()
+# 另一种创建方法
+>>> p1 = Publisher.objects.create(name='Apress',
+ address='2855 Telegraph Avenue',
+ city='Berkeley', state_province='CA', country='U.S.A.',
+ website='http://www.apress.com/')
+>>> p2 = Publisher.objects.create(name="O'Reilly",
+ address='10 Fawcett St.', city='Cambridge',
+ state_province='MA', country='U.S.A.',
+ website='http://www.oreilly.com/')
+>>> publisher_list = Publisher.objects.all()
+>>> publisher_list
+[<Publisher: Publisher object>, <Publisher: Publisher object>]
+
+# 查询
+```
