@@ -380,3 +380,71 @@ WHERE id = 52;
 
 >>> Publisher.objects.filter(country='USA').delete()
 ```
+# admin后台
+- 创建用户
+```python
+$ python manage.py createsuperuser
+Username (leave blank to use 'zhourudong'): admin
+Email address: admin@qq.com
+Password:
+Password (again):
+Superuser created successfully.
+```
+- models注册到admin
+admin.py
+```python
+from django.contrib import admin
+from .models import Publisher, Author, Book
+
+admin.site.register(Publisher)
+admin.site.register(Author)
+admin.site.register(Book)
+```
+- 修改显示字段
+```python
+# coding:utf8
+from django.contrib import admin
+from .models import Publisher, Author, Book
+
+
+class AuthorAdmin(admin.ModelAdmin):
+    list_display = ('first_name','last_name', 'email')
+    # 修改显示的字段
+    search_fields = ('first_name', 'last_name')
+    # 搜索字段
+
+admin.site.register(Publisher)
+admin.site.register(Author, AuthorAdmin)
+admin.site.register(Book)
+```
+
+```python
+# coding:utf8
+from django.contrib import admin
+from .models import Publisher, Author, Book
+
+
+class AuthorAdmin(admin.ModelAdmin):
+    list_display = ('first_name','last_name', 'email')
+    # 修改显示的字段
+    search_fields = ('first_name', 'last_name')
+    # 搜索字段
+
+
+class BookAdmin(admin.ModelAdmin):
+    list_display = ('title', 'publisher','publication_date')
+    list_filter = ('publication_date',)
+    # 搜索过滤 按发布时间
+    date_hierarchy = 'publication_date'
+    # 分层格式化输出
+    ordering = ('-publication_date',)
+    # 降序排序
+    filter_horizontal = ('authors',)
+    # 
+    fields = ('title', 'authors', 'publisher', 'publication_date')
+
+admin.site.register(Publisher)
+admin.site.register(Author, AuthorAdmin)
+admin.site.register(Book,  BookAdmin)
+
+```
