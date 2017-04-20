@@ -448,3 +448,33 @@ admin.site.register(Author, AuthorAdmin)
 admin.site.register(Book,  BookAdmin)
 
 ```
+
+# 表单
+```python
+In [1]: from mysite.forms import ContactForm
+
+In [2]: f = ContactForm()
+
+In [5]: print f
+<tr><th><label for="id_subject">Subject:</label></th><td><input id="id_subject" name="subject" type="text" /></td></tr>
+<tr><th><label for="id_email">Email:</label></th><td><input id="id_email" name="email" type="email" /></td></tr>
+<tr><th><label for="id_message">Message:</label></th><td><input id="id_message" name="message" type="text" /></td></tr>
+
+
+In [7]: print f.as_ul()
+<li><label for="id_subject">Subject:</label> <input id="id_subject" name="subject" type="text" /></li>
+<li><label for="id_email">Email:</label> <input id="id_email" name="email" type="email" /></li>
+<li><label for="id_message">Message:</label> <input id="id_message" name="message" type="text" /></li>
+
+In [8]: print f.as_p()
+<p><label for="id_subject">Subject:</label> <input id="id_subject" name="subject" type="text" /></p>
+<p><label for="id_email">Email:</label> <input id="id_email" name="email" type="email" /></p>
+<p><label for="id_message">Message:</label> <input id="id_message" name="message" type="text" /></p>
+
+In [9]: print f['subject']
+<input id="id_subject" name="subject" type="text" />
+
+In [10]: print f['message']
+<input id="id_message" name="message" type="text" />
+```
+
