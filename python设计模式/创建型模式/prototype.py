@@ -3,6 +3,9 @@
 # Time: 2017/5/16 14:38
 # Author: zhourudong
 
+# use a factory and clones of a prototype for new instances (if instantiation is expensive)
+# 为新实例使用工厂和克隆原型(如果实例化是昂贵的)
+
 '''
 class Prototype:
     value = "default"
