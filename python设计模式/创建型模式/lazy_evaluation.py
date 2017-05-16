@@ -44,3 +44,14 @@ def main():
 
 if __name__ == '__main__':
     main()
+	
+	
+# 返回
+'''
+name:Jhon     Occupation:Coder
+Before we access `relatives`:
+{'occupation': 'Coder', 'name': 'Jhon'}
+Jhon's relatives: Many relatives.
+After we've accessed `relatives`:
+{'occupation': 'Coder', 'relatives': 'Many relatives.', 'name': 'Jhon'}
+'''
