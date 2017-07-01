@@ -28,8 +28,7 @@ class AuthorViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 # version 2
-class AuthorViewSet(viewsets.ModelViewSet):
-class AuthorViewSet(viewsets.ModelViewSet):
+
 class AuthorViewSet(viewsets.ModelViewSet):
     """
         This viewset automatically provides `list`, `create`, `retrieve`,
