@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<ul>
+    {% for author in object_list %}
+        <li>{{ author.id }} ### {{ author.name }}</li>
+    {% endfor %}
+
+</ul>
+
+</body>
+</html>
