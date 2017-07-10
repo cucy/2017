@@ -1,0 +1,69 @@
+{% extends 'sh/public/sh_base.html' %}
+
+{% block content %}
+<div class="col-md-10">
+
+                            <div class="card">
+                                <form method="post" action="#" class="form-horizontal">
+                                    <div class="card-header card-header-text" data-background-color="rose">
+                                        <h4 class="card-title">{{ asset_obj.hostname_raw }}</h4>
+                                    </div>
+
+                                    <div class="card-content">
+
+                                     {% comment %}   {{ asset_obj.as_ul }}{% endcomment %}
+
+                                        <!-- s -->
+
+                                        <div class="row">
+                                            <label class="col-sm-2 label-on-left"><b>主机名信息*</b></label>
+                                            <div class="col-sm-8">
+                                                <div class="form-group label-floating is-empty">
+                                                    <label class="control-label"></label>
+                                                    <input type="text" placeholder="{{ asset_obj.ip }}" disabled=""
+                                                           class="form-control">
+                                                    <span class="material-input"></span></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <label class="col-sm-2 label-on-left">备注信息*</label>
+                                            <div class="col-sm-8">
+                                                <div class="form-group label-floating is-empty">
+                                                    <label class="control-label"></label>
+                                                    <input type="text" class="form-control" name="comment"
+                                                           value="{{ asset_obj.comment }}">
+                                                    <span class="help-block">请输入修改的信息.</span>
+                                                    <span class="material-input"></span></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <label class="col-sm-2 label-on-left">项目*</label>
+                                            <div class="col-sm-8">
+                                                <div class="form-group label-floating is-empty">
+                                                    <label class="control-label"></label>
+                                                    <input type="text" class="form-control" placeholder="">
+                                                    <span class="material-input"></span></div>
+                                            </div>
+                                        </div>
+                                        <!-- e -->
+
+
+
+                                        <div class="row">
+                                            <div class="col-sm-5 label-on-left">
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="submit" class="btn btn-success">
+                                                        <input type="reset" class="btn btn-warning">
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+{% endblock %}

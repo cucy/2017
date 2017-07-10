@@ -1,0 +1,53 @@
+{% extends 'sh/public/sh_base.html' %}
+{% block content %}
+    <form action="/" method="POST">
+        {% csrf_token %}
+        {{ obj.as_table }}
+        <input type="submit" value="提交" />
+    </form>
+
+{% endblock %}
+
+
+
+ <script>
+        $(function () {
+
+
+            $("#add_group").click(function () {
+                var create_group_modal = $("#create_group");
+                create_group_modal.modal("show");
+                //  执行添加用户组
+                $("#create_group_btn").click(function () {
+                    var group_input = $("#form_groupname");     // 找到
+                    var group_value = group_input.val();            // 取值
+                    create_group_modal.modal("hide");
+                    if (group_value == "") {
+                        // 简单验证
+                        swal("添加失败", "用户组名不能为空", 'error');
+                        //  当为空时取消默认行为
+                        return false;
+                    }
+                    //  提交 第一个参数为url 第二个参数为json数值  函数
+                    $.post("", {"name": group_value}, function (res) {
+                        if (res.status == 0) {
+                            swal({
+                                "title": "添加组成功",
+                                "text": "",
+                                "type": "success"
+                            }, function () { // 成功后执行此函数  刷新此页面
+                                setTimeout(function () {
+                                    window.location.reload();
+                                }, 50);
+                            })
+                        } else {
+                            // 操作失败
+                            swal("操作失败", res.errmsg, "error");
+                        }
+                    })
+                })
+            });
+
+
+        })
+    </script>
