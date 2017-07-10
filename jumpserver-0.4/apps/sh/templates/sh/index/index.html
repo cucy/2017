@@ -1,0 +1,449 @@
+{% extends "sh/public/sh_base.html" %}
+
+{% load static %}
+{% block style %}
+
+
+
+    <style>
+
+
+
+        #product_info {
+            padding-bottom: 25px;
+        }
+
+        #modify {
+            width: 100%;
+            height: 100%;
+            display: none
+        }
+
+        .controls {
+            display: none;
+        }
+
+        #infomatioin {
+            width: 100%;
+            height: 100%;
+            display: none
+        }
+
+        #infomatioin ul li {
+            line-height: 45px;
+            font-size: 16px;
+        }
+
+        #infomatioin ul li label {
+            display: inline-block;
+            width: 100px;
+            text-align: right;
+            font-weight: bold;
+            margin-right: 25px;
+        }
+
+        #infomatioin ul li button {
+            margin-left: 125px;
+        }
+
+        #hostlist {
+            display: none;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            padding-top: 10px;
+        }
+
+        #hostlist li {
+            margin-right: 10px;
+            min-width: 200px;
+        }
+
+        .header-btn {
+            margin-left: 20px;
+        }
+
+        .chosen-choices {
+
+        }
+
+    </style>
+    <link href="/static/css/sh/chosen.css" rel="stylesheet">
+    <link href="/static/css/sh/chosen-bootstrap.css" rel="stylesheet" >
+
+    <link href="{% static '/js/sh/zTree_v3-3.5.28/css/zTreeStyle/zTreeStyle.css' %}" rel="stylesheet" >
+{% endblock %}
+
+{% block content %}
+    <div id="main-content" class="col-md-12" style="padding-top:20px;">
+        <div id="content-body">
+
+            {#   ztree列表  #}
+            <div class="col-xs-3 ">
+                <label>项目信息</label>
+                <div id="treeDemo" class="ztree card  "></div>
+            </div>
+
+
+
+            {#  点击ztree后展示出 详情  #}
+            <div class="col-xs-9">
+                <div class="row" id="product_info">
+
+                    {#  点击ztree后展示出 详情  #}
+                    <div id="infomatioin" class="card">
+                        <ul class="list-unstyled ">
+                            <br/>
+                            <li><label>项目名: </label><span id="info_project_name"></span></li>
+                            <li><label>上级项目: </label><span id="info_p_project"></span></li>
+                            <li><label>项目路径: </label><span id="info_path"></span></li>
+                            <li><label>创建时间: </label><span id="info_c_time"></span></li>
+                            <li><label>修改时间: </label><span id="info_u_time"></span></li>
+                            <li><label>备注: </label><span id="info_comment"></span></li>
+                            <li>
+                                <button type="button" class="btn btn-primary" id="info_modify_btn">修改</button>
+                            </li>
+                        </ul>
+                    </div>
+
+                    {#  点击ztree后展示出--》 详情-- >>修改S  #}
+                    <div id="modify" class="card" style="display: none;">
+                        <br/>
+                        <form class="form-horizontal" role="form" parsley-validate method="post" id="basicvalidations">
+                            <div class="form-group">
+                                <label for="name" class="col-sm-2 control-label">项目名 *</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control parsley-validated"
+                                           name="name" autocomplete="off" id="input_project_name"
+                                           parsley-trigger="change" parsley-required="true"
+                                           parsley-minlength="2" parsley-validation-minlength="1">
+                                </div>
+                            </div>
+
+                            <!-- xxxxxxxxxxxxxxxx 上级项目 xxxxxxxxxxxxxx -->
+
+                            <div class="form-group">
+                                <label for="name" class="col-sm-2 control-label">上级业务线 *</label>
+                                <div class="col-sm-8">
+                                    <select data-placeholder="上级业务线" id="input_p_project"
+                                            class="form-control control-label btn-round p_project_rerefresh "
+                                            tabindex="-1" name="one_project_id">
+
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- xxxxxxxxxxxxxxxxx 上级项目 xxxxxxxxxxxxx -->
+
+                            <div class="form-group">
+                                <label for="name" class="col-sm-2 control-label">项目路径 *</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control parsley-validated"
+                                           name="path" autocomplete="off" id="input_path">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="name" class="col-sm-2 control-label">备注 *</label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control parsley-validated"
+                                           name="comment" autocomplete="off" id="input_comment"
+                                    >
+                                </div>
+                            </div>
+
+                            <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
+
+                            <div class="form-group">
+                                <label for="name" class="col-sm-2 control-label">资产 *</label>
+                                <div class="col-sm-8">
+                                    <select data-placeholder="所属业务线" id="input_asset"
+                                            class="form-control control-label btn-round dev_interface_rerefresh"
+                                            tabindex="-1" name="asset_id_list" multiple>
+
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
+
+                            <div class="form-group form-footer">
+                                <div class="col-sm-offset-4 col-sm-8">
+
+                                    <button type="submit" id="submit_modify" class="btn btn-primary">提交</button>
+                                    <button id="return_info" class="btn btn-default">返回</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    {#  点击ztree后展示出--》 详情-- >>修改E  #}
+
+                    <div class="clear"></div>
+                </div>
+
+                {#  点击ztree后展示出 ---> 二级业务线 --》 主机列表  #}
+                <div class="row ">
+                    <ul class="list-inline   text-info" id="hostlist" style="display: none;">
+
+                    </ul>
+                </div>
+
+            </div>
+            <div class="clear"></div>
+
+        </div>
+    </div>
+
+
+    <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
+
+    <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
+{% endblock %}
+
+{% block custom_js %}
+    <script type="text/javascript" src="{% static 'js/sh/zTree_v3-3.5.28/js/jquery.ztree.all.min.js' %}"></script>
+    <script src="/static/js/sh/chosen.jquery.js"></script>
+
+    <script>
+
+        var all_assert_list = {{ all_assert_list|safe }}; // 所有资产列表
+        var all_one_project = {{ all_one_project|safe }}; // 所有一级项目列表
+        var data;
+        var hosdata_list;
+        var hostlist = $("#hostlist"); // 主机列表
+
+
+        var infomatioin_div = $("#infomatioin"); //  双击ztree叶子点后 展示右边数据id
+        /* 双击ztree叶子点后 展示右边数据 S */
+        var info_project_name = $('#info_project_name');
+        var info_p_project = $('#info_p_project');
+        var info_path = $('#info_path');
+        var info_c_time = $('#info_c_time');
+        var info_u_time = $('#info_u_time');
+        var info_comment = $('#info_comment');
+        /* 双击ztree叶子点后 展示右边数据 E */
+
+        /* 点击修改 */
+        var info_modify_btn = $("#info_modify_btn");
+        var modify_div = $("#modify");
+        var input_project_name = $("#input_project_name"); // 项目名
+        var input_p_project = $("#input_p_project");    // 上一级项目
+        var input_path = $("#input_path");              // 项目路径
+        var input_comment = $("#input_comment");        // 项目备注
+        var input_asset = $("#input_asset");
+
+        /* 点击返回 */
+        var return_info_btn = $("#return_info");
+        /* 点击提交按钮 */
+        var submit_modify = $("#submit_modify");
+
+        /* 展示节点信息函数 (获取函数)  */
+        function show_product_info() {
+            infomatioin_div.hide();
+            modify_div.hide();
+            $.ajax({
+                cache: false,
+                async: true,
+                url: '{% url "sh:index" %}',
+                type: "getoneinfo",
+                data: {'id': id},
+                traditional: true,
+                success: function (res) {
+                    if (res.status == 0) {
+                        data = res.data;
+                        hosdata_list = data.asset;
+                        infomatioin_div.fadeIn("fast");
+
+                        info_project_name.text(data.name);
+                        info_p_project.text(data.pid);
+                        info_path.text(data.path);
+                        info_c_time.text(data.c_time);
+                        info_u_time.text(data.u_time);
+                        info_comment.text(data.comment);
+                    } else {
+                        swal('错误', res.errmsg, "error");
+                    }
+                }
+            });
+        }
+
+
+        /* 展示资产列表信息函数  */
+
+        function show_hostlist() {
+            $('#hostlist').empty();
+            $.ajax({
+                cache: false,
+                async: true,
+                url: '{% url "sh:index" %}',
+                type: "getoneinfo",
+                data: {'id': id},
+                traditional: true,
+                success: function (res) {
+
+                    var res = res;
+                    if (res.status == 0) {
+                        //alert(res);
+                        hosdata_list = res.data.asset;
+
+                        $.each(hosdata_list, function (n, obj) {
+                            console.log(obj);
+                            hostlist.append("<li>" + obj.hostname + "（" + obj.public_ip + "）</li>");
+                        });
+                        hostlist.fadeIn('fast');
+
+                    } else {
+                        swal('错误', res.errmsg, "error");
+                    }
+                }
+            });
+
+
+            {% comment %}
+
+                        hosdata_list = data.asset;
+                        $.each(hosdata_list, function (n, obj) {
+                            hostlist.append("<li>" + obj.hostname + "（" + obj.public_ip + "）</li>");
+                        });
+                        hostlist.fadeIn('fast');
+
+            {% endcomment %}
+
+        }
+
+
+        function zTreeOnClick(event, treeId, treeNode) {
+            id = treeNode.id;
+            /*  点击节点 --> 展示该节点详细信息  */
+            show_product_info();
+            //   hostlist.hide().empty();
+            if (treeNode.pid != 0) {
+                /*  显示项目下所有的资产列表 */
+                {% comment %}hostlist.parent().addClass('card');{% endcomment %}
+                show_hostlist();
+            }
+        }
+
+        var zTreeObj;
+        // zTree 的参数配置
+        var setting = {
+            callback: {
+                onClick: zTreeOnClick
+            },
+            view: {
+                fontCss: {fontSize: "20px"}
+            }
+        };
+        // zTree 的数据属性
+        var zNodes = {{ ztree|safe }};
+
+
+        $(function () {
+            // chosen select input
+            zTreeObj = $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+
+            // 点击修改按钮
+            info_modify_btn.click(function () {
+
+                infomatioin_div.hide();
+                modify_div.fadeIn("fast");
+                input_project_name.val(data.name);      // 项目名
+
+
+                input_p_project.empty().chosen("destroy");  // 顶级项目(上一级，当前项目上一级)
+
+                $.each(all_one_project, function (n, obj) {
+                    var p_project;
+
+                    if (obj.name == data.pid) {
+                        p_project = '<option value="' + obj.id + '"selected >';
+                    } else {
+                        p_project = '<option value="' + obj.id + '">';
+                    }
+
+                    p_project += obj.name + '</option>';
+                    input_p_project.append(p_project);
+                });
+
+                input_path.val(data.path);              // 项目路径
+                input_comment.val(data.comment);        // 项目备注
+
+
+                var selected_dev_hostname = data.asset; // 项目资产(已选择)
+                hostname_tmp = [];
+                var selected_dev_hostname = $.each(data.asset, function (n, obj) {
+                    hostname_tmp.push(obj.hostname);
+                });
+                input_asset.empty().chosen("destroy");
+                $.each(all_assert_list, function (n, obj) {
+                    var dev_option;
+                    if ($.inArray(obj.hostname, hostname_tmp) >= 0) {
+                        //  已选择项目,在多选框中设置为已选中状态
+                        dev_option = '<option value="' + obj.id + '"selected>';
+                    } else {
+                        dev_option = '<option value="' + obj.id + '">';
+                    }
+                    dev_option += obj.hostname + '</option>';
+                    input_asset.append(dev_option);
+
+                });
+
+
+                $(".dev_interface_rerefresh").chosen({disable_search_threshold: 6, no_results_text: "没有找到对应的记录"});
+                $('.dev_interface_rerefresh').trigger('chosen:updated');
+
+                $(".p_project_rerefresh").chosen({disable_search_threshold: 6, no_results_text: "没有找到对应的记录"});
+                $('.p_project_rerefresh').trigger('chosen:updated');
+
+
+            });
+
+            // 点击返回
+            return_info_btn.click(function () {
+                modify_div.hide();
+                infomatioin_div.fadeIn("fast");
+                return false
+            });
+
+            // 点击提交按钮
+            submit_modify.click(function () {
+
+                var modify_data = {
+                    "id": data.id,
+                    "name": input_project_name.val(), // 项目名
+                    'p_project': input_p_project.val(), // 上级项目
+                    'comment': input_comment.val(),  // 备注
+                    'path': input_path.val(),        // 项目路径
+                    'asset': input_asset.val()  // 资产
+                };
+                $.ajax({
+                    cache: false,
+                    async: true,
+                    url: '{% url "sh:index" %}',
+                    type: 'POST',
+                    data: modify_data,
+                    traditional: true,
+                    success: function (res) {
+                        if (res.status == 0) {
+                            swal({
+                                title: '操作成功',
+                                text: '',
+                                type: 'success'
+                            }).then(
+                                function () {
+                                    show_product_info();
+                                    show_hostlist();
+
+                                });
+                        } else {
+                            swal('错误', res.errmsg, "error");
+                        }
+                    }
+
+                });
+                return false;
+            });
+
+        })
+
+    </script>
+
+{% endblock %}

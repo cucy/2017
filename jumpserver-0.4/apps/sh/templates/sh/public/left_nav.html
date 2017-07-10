@@ -1,0 +1,30 @@
+              <ul class="nav fnav">
+
+                    <li  >
+                        <a href="{% url 'sh:index' %}">
+                            <i class="material-icons">dashboard</i>
+                            <p>Dashboard</p>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a data-toggle="collapse" href="#pagesExamples1" class=" ">
+                            <i class="material-icons">image</i>
+                            <p>资源
+                                <b class="caret"></b>
+                            </p>
+                        </a>
+                        <div class="collapse  "   id="pagesExamples1" >
+                            <ul class="nav fnavt ">
+                                <li>
+                                    <a href="{% url 'sh:assert' %}">资产</a>
+                                </li>
+                                <li>
+                                    <a  href="{% url 'sh:project_list' %}">项目</a>
+                                </li>
+
+                            </ul>
+                        </div>
+                    </li>
+
+                </ul>
